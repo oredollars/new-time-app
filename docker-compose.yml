@@ -1,0 +1,9 @@
+version: "3.8"
+
+services:
+  clock-app:
+    build: .
+    container_name: clock-app
+    ports:
+      - "9090:80"
+    restart: unless-stopped

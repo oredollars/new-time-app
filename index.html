@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Clock</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --border: #1e1e2e;
+      --accent: #c8a96e;
+      --accent2: #6e8fc8;
+      --text: #e8e4d8;
+      --muted: #5a5870;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    /* Animated background grid */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(200,169,110,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(200,169,110,0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      animation: gridDrift 20s linear infinite;
+      pointer-events: none;
+    }
+
+    @keyframes gridDrift {
+      0%   { transform: translateY(0); }
+      100% { transform: translateY(60px); }
+    }
+
+    /* Ambient glow */
+    body::after {
+      content: '';
+      position: fixed;
+      top: -20%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(ellipse, rgba(200,169,110,0.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .card {
+      position: relative;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 56px 72px;
+      text-align: center;
+      min-width: 520px;
+      animation: fadeUp 0.8s cubic-bezier(0.16,1,0.3,1) both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Corner decorations */
+    .card::before, .card::after {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      border-color: var(--accent);
+      border-style: solid;
+    }
+    .card::before { top: -1px; left: -1px; border-width: 2px 0 0 2px; }
+    .card::after  { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; }
+
+    .label {
+      font-size: 10px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 32px;
+    }
+
+    .time {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(64px, 10vw, 96px);
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -2px;
+      color: var(--text);
+      margin-bottom: 8px;
+      animation: fadeUp 0.8s 0.1s cubic-bezier(0.16,1,0.3,1) both;
+    }
+
+    .time .seconds {
+      color: var(--accent);
+    }
+
+    .ampm {
+      font-family: 'DM Mono', monospace;
+      font-size: 14px;
+      font-weight: 300;
+      color: var(--accent);
+      letter-spacing: 0.2em;
+      margin-bottom: 40px;
+      animation: fadeUp 0.8s 0.2s cubic-bezier(0.16,1,0.3,1) both;
+    }
+
+    .divider {
+      width: 48px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      margin: 0 auto 40px;
+      animation: fadeUp 0.8s 0.3s cubic-bezier(0.16,1,0.3,1) both;
+    }
+
+    .date {
+      font-size: 13px;
+      letter-spacing: 0.15em;
+      color: var(--muted);
+      text-transform: uppercase;
+      animation: fadeUp 0.8s 0.4s cubic-bezier(0.16,1,0.3,1) both;
+    }
+
+    .date .day-name {
+      display: block;
+      font-size: 11px;
+      letter-spacing: 0.35em;
+      color: var(--accent2);
+      margin-bottom: 10px;
+    }
+
+    .ticker {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      margin-top: 40px;
+      animation: fadeUp 0.8s 0.5s cubic-bezier(0.16,1,0.3,1) both;
+    }
+
+    .ticker-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .ticker-val {
+      font-size: 22px;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .ticker-lbl {
+      font-size: 9px;
+      letter-spacing: 0.25em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .ticker-sep {
+      color: var(--border);
+      font-size: 28px;
+      line-height: 1;
+      padding-top: 4px;
+    }
+
+    /* Blinking colon */
+    .blink { animation: blink 1s step-end infinite; }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.15; }
+    }
+
+    /* Progress bar for seconds */
+    .progress-wrap {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--border);
+    }
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent2), var(--accent));
+      transition: width 1s linear;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="label">Current Time &amp; Date</div>
+
+    <div class="time" id="time">
+      <span id="hh">00</span><span class="blink">:</span><span id="mm">00</span><span class="blink">:</span><span class="seconds" id="ss">00</span>
+    </div>
+    <div class="ampm" id="ampm">AM</div>
+
+    <div class="divider"></div>
+
+    <div class="date">
+      <span class="day-name" id="dayName">Monday</span>
+      <span id="fullDate">January 1, 2025</span>
+    </div>
+
+    <div class="ticker">
+      <div class="ticker-item">
+        <span class="ticker-val" id="t-day">01</span>
+        <span class="ticker-lbl">Day</span>
+      </div>
+      <span class="ticker-sep">/</span>
+      <div class="ticker-item">
+        <span class="ticker-val" id="t-month">01</span>
+        <span class="ticker-lbl">Month</span>
+      </div>
+      <span class="ticker-sep">/</span>
+      <div class="ticker-item">
+        <span class="ticker-val" id="t-year">2025</span>
+        <span class="ticker-lbl">Year</span>
+      </div>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-bar" id="progress"></div>
+    </div>
+  </div>
+
+  <script>
+    const pad = n => String(n).padStart(2, '0');
+    const days   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+    function tick() {
+      const now = new Date();
+      let h = now.getHours();
+      const ampm = h >= 12 ? 'PM' : 'AM';
+      h = h % 12 || 12;
+
+      document.getElementById('hh').textContent = pad(h);
+      document.getElementById('mm').textContent = pad(now.getMinutes());
+      document.getElementById('ss').textContent = pad(now.getSeconds());
+      document.getElementById('ampm').textContent = ampm;
+
+      document.getElementById('dayName').textContent  = days[now.getDay()];
+      document.getElementById('fullDate').textContent = `${months[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
+
+      document.getElementById('t-day').textContent   = pad(now.getDate());
+      document.getElementById('t-month').textContent = pad(now.getMonth() + 1);
+      document.getElementById('t-year').textContent  = now.getFullYear();
+
+      // Seconds progress bar
+      document.getElementById('progress').style.width = `${(now.getSeconds() / 59) * 100}%`;
+    }
+
+    tick();
+    setInterval(tick, 1000);
+  </script>
+</body>
+</html>
