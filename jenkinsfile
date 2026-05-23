@@ -9,7 +9,7 @@ pipeline {
 
         stage('Clone') {
             steps {
-                git 'https://github.com/oredollars/new-time-app.git'
+                git branch: 'main', url: 'https://github.com/oredollars/new-time-app.git'
             }
         }
 
