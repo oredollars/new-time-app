@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = "Oredollar/new-time-app-clock-app"
+        IMAGE_NAME = "oredollar/new-time-app-clock-app"
     }
 
     stages {
