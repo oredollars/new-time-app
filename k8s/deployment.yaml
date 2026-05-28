@@ -1,10 +1,11 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: clock-app
+  name: clock-app2
 
 spec:
   replicas: 5
+
 
   selector:
     matchLabels:
